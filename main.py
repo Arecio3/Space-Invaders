@@ -83,14 +83,17 @@ def main():
         # Tracks keys being pressed (gives you ability to hit 2 keys at the same time)
         keys = pygame.key.get_pressed()
         # Returns DICT, after underscore specify what key to check
-        if keys[pygame.K_a]: # move left
+        if keys[pygame.K_a] and ship.x + player_speed > 0: # move left
             # move one pixel to the left
             ship.x -= player_speed
-        if keys[pygame.K_d]: # move right
+        # Checks if your in the screen
+        if keys[pygame.K_d] and ship.x + player_speed < WIDTH: # move right
             ship.x += player_speed
-        if keys[pygame.K_w]: # move up
+        # Checks if your in the screen
+        if keys[pygame.K_w] and ship.y + player_speed > 0: # move up
             ship.y -= player_speed
-        if keys[pygame.K_s]: # move down
+        # Checks if your in the screen
+        if keys[pygame.K_s] and ship.y + player_speed < HEIGHT: # move down
             ship.y += player_speed
 
 main()
