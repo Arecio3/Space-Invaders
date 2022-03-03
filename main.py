@@ -37,9 +37,22 @@ class Ship:
         self.lasers_img = None
         self.lasers = []
         self.cool_down_counter = 0
-    
+   
     def draw(self, window):
-        pygame.draw.rect(window, (255, 0,0), (self.x, self.y, 50, 50))
+        # Draw a rectangle
+        # pygame.draw.rect(window, (255, 0,0), (self.x, self.y, 50, 50))
+        # Draw Ship
+        window.blit(self.ship_img, (self.x, self.y))
+
+class Player(Ship):
+    def __init__(self, x, y, health=100):
+        # Brings all properties from Ship __init__
+        super().__init__(x,y, health)
+        self.ship_img = YELLOW_SPACE_SHIP
+        self.laser_img = YELLOW_LASER
+        # Mask (pixel perfect collision) takes ship img and makes mask = tells us where there is and isnt any pixels
+        self.mask = pygame.mask.from_surface(self.ship_img)
+        self.max_health = health
 
 
 # Main loop to run game logic
@@ -51,7 +64,7 @@ def main():
     main_font = pygame.font.SysFont("comicsans", 50)
     player_speed = 5
     # Instantiate a ship
-    ship = Ship(300, 650)
+    player = Player(300, 650)
 
     clock = pygame.time.Clock()
     # Render Game
@@ -66,8 +79,8 @@ def main():
         WIN.blit(lives_label, (10,10))
         # Dynamic width
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
-        # Draw Ship
-        ship.draw(WIN)
+        # Draw Ship to Screen
+        player.draw(WIN)
         # Refreshes Screen so it has updated version
         pygame.display.update()
 
@@ -83,17 +96,17 @@ def main():
         # Tracks keys being pressed (gives you ability to hit 2 keys at the same time)
         keys = pygame.key.get_pressed()
         # Returns DICT, after underscore specify what key to check
-        if keys[pygame.K_a] and ship.x + player_speed > 0: # move left
+        if keys[pygame.K_a] and player.x + player_speed > 0: # move left
             # move one pixel to the left
-            ship.x -= player_speed
+            player.x -= player_speed
         # Checks if your in the screen
-        if keys[pygame.K_d] and ship.x + player_speed < WIDTH: # move right
-            ship.x += player_speed
+        if keys[pygame.K_d] and player.x + player_speed + 50 < WIDTH: # move right
+            player.x += player_speed
         # Checks if your in the screen
-        if keys[pygame.K_w] and ship.y + player_speed > 0: # move up
-            ship.y -= player_speed
+        if keys[pygame.K_w] and player.y + player_speed > 0: # move up
+            player.y -= player_speed
         # Checks if your in the screen
-        if keys[pygame.K_s] and ship.y + player_speed < HEIGHT: # move down
-            ship.y += player_speed
+        if keys[pygame.K_s] and player.y + player_speed + 50 < HEIGHT: # move down
+            player.y += player_speed
 
 main()
