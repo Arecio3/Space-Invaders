@@ -26,6 +26,22 @@ YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"
 # Load background and scale it to match screen size
 BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
 
+# Abstract Class (inherit class for all the ships and manipulate)
+class Ship:
+    def __init__(self, x, y, health=100):
+        self.x = x
+        self.y = y
+        self.health = health
+        # We define these in General class
+        self.ship_img = None
+        self.lasers_img = None
+        self.lasers = []
+        self.cool_down_counter = 0
+    
+    def draw(self, window):
+        pygame.draw.rect(window, (255, 0,0), (self.x, self.y, 50, 50))
+
+
 # Main loop to run game logic
 def main():
     run = True
@@ -33,6 +49,9 @@ def main():
     level = 1
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+    player_speed = 5
+    # Instantiate a ship
+    ship = Ship(300, 650)
 
     clock = pygame.time.Clock()
     # Render Game
@@ -47,6 +66,8 @@ def main():
         WIN.blit(lives_label, (10,10))
         # Dynamic width
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        # Draw Ship
+        ship.draw(WIN)
         # Refreshes Screen so it has updated version
         pygame.display.update()
 
@@ -59,5 +80,17 @@ def main():
             # If user exits stop the game
             if event.type == pygame.QUIT:
                 run = False
+        # Tracks keys being pressed (gives you ability to hit 2 keys at the same time)
+        keys = pygame.key.get_pressed()
+        # Returns DICT, after underscore specify what key to check
+        if keys[pygame.K_a]: # move left
+            # move one pixel to the left
+            ship.x -= player_speed
+        if keys[pygame.K_d]: # move right
+            ship.x += player_speed
+        if keys[pygame.K_w]: # move up
+            ship.y -= player_speed
+        if keys[pygame.K_s]: # move down
+            ship.y += player_speed
 
 main()
