@@ -59,6 +59,17 @@ class Player(Ship):
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
 
+class Enemy(Ship):
+    # DICT OF COLORS
+    COLOR_MAP = {
+        "red": (RED_SPACE_SHIP, RED_LASER),
+        "green": (GREEN_SPACE_SHIP, GREEN_LASER),
+        "blue": (BlUE_SPACE_SHIP, BLUE_LASER)
+    }
+    def __init__(self, x, y, color, health=100):
+        super().__init__(x, y, health)
+        self.ship_img, self.lasers_img = self.COLOR_MAP[color]
+
 
 # Main loop to run game logic
 def main():
