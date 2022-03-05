@@ -43,6 +43,11 @@ class Ship:
         # pygame.draw.rect(window, (255, 0,0), (self.x, self.y, 50, 50))
         # Draw Ship
         window.blit(self.ship_img, (self.x, self.y))
+    # Gets width and height of the ship so it doesnt go off screen
+    def get_width(self):
+        return self.ship_img.get_width()
+    def get_heigth(self):
+        return self.ship_img.get_height()
 
 class Player(Ship):
     def __init__(self, x, y, health=100):
@@ -100,13 +105,13 @@ def main():
             # move one pixel to the left
             player.x -= player_speed
         # Checks if your in the screen
-        if keys[pygame.K_d] and player.x + player_speed + 50 < WIDTH: # move right
+        if keys[pygame.K_d] and player.x + player_speed + player.get_width() < WIDTH: # move right
             player.x += player_speed
         # Checks if your in the screen
         if keys[pygame.K_w] and player.y + player_speed > 0: # move up
             player.y -= player_speed
         # Checks if your in the screen
-        if keys[pygame.K_s] and player.y + player_speed + 50 < HEIGHT: # move down
+        if keys[pygame.K_s] and player.y + player_speed + player.get_heigth() < HEIGHT: # move down
             player.y += player_speed
 
 main()
