@@ -68,16 +68,29 @@ class Enemy(Ship):
     }
     def __init__(self, x, y, color, health=100):
         super().__init__(x, y, health)
+        # sets images as the Color Map
         self.ship_img, self.lasers_img = self.COLOR_MAP[color]
+        self.mask = pygame.mask.from_surface(self.ship_img)
+    # Method to move ship
+    def move(self, vel):
+        # If we pass a speed ships move diown
+        self.y += vel
 
 
 # Main loop to run game logic
 def main():
     run = True
     FPS = 60
-    level = 1
+    level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+
+    # Store all enemies
+    enemies = []
+    # Increments after every level
+    wave_length = 5
+    # Enemy speed
+    enemy_vel = 1
     player_speed = 5
     # Instantiate a ship
     player = Player(300, 650)
@@ -95,15 +108,28 @@ def main():
         WIN.blit(lives_label, (10,10))
         # Dynamic width
         WIN.blit(level_label, (WIDTH - level_label.get_width() - 10, 10))
+        # Draws enemies to screen
+        for enemy in enemies:
+            enemy.draw(WIN)
         # Draw Ship to Screen
         player.draw(WIN)
+
         # Refreshes Screen so it has updated version
         pygame.display.update()
 
     while run:
         # Tick clock based on FPS Rate (Allows our game to stay consistent on any device)
         clock.tick(FPS)
-        redraw_window()
+        # When all enemy ships die increment level
+        if len(enemies) == 0:
+            level += 1
+            # Increase enemies
+            wave_length += 5
+            # Create new enemies
+            for i in range(wave_length):
+                # randomly spawn in different locations (max left side 50 and -100 to keep in screen)(smallest value, closest value)
+                enemy = Enemy(random.randrange(50, WIDTH-100), random.randrange(-1500, -100), random.choice(["red", "blue", "green"]))
+                enemies.append(enemy)
         # Check for events 
         for event in pygame.event.get():
             # If user exits stop the game
@@ -125,4 +151,9 @@ def main():
         if keys[pygame.K_s] and player.y + player_speed + player.get_heigth() < HEIGHT: # move down
             player.y += player_speed
 
+        # For each enemy on screen move down by velocity
+        for enemy in enemies:
+            enemy.move(enemy_vel)
+
+        redraw_window()
 main()
