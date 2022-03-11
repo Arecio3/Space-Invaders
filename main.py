@@ -46,7 +46,7 @@ class Ship:
     # Gets width and height of the ship so it doesnt go off screen
     def get_width(self):
         return self.ship_img.get_width()
-    def get_heigth(self):
+    def get_height(self):
         return self.ship_img.get_height()
 
 class Player(Ship):
@@ -148,12 +148,18 @@ def main():
         if keys[pygame.K_w] and player.y + player_speed > 0: # move up
             player.y -= player_speed
         # Checks if your in the screen
-        if keys[pygame.K_s] and player.y + player_speed + player.get_heigth() < HEIGHT: # move down
+        if keys[pygame.K_s] and player.y + player_speed + player.get_height() < HEIGHT: # move down
             player.y += player_speed
 
-        # For each enemy on screen move down by velocity
-        for enemy in enemies:
+        # For each enemy on screen move down by velocity [copy so we dont modify list we're going through]
+        for enemy in enemies[:]:
             enemy.move(enemy_vel)
+            # Check if enemy went passed Player Ship
+            if enemy.y + enemy.get_height() > HEIGHT:
+                # Takes life away
+                lives -= 1
+                # remove enemy from list
+                enemies.remove(enemy)
 
         redraw_window()
 main()
