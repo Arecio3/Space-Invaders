@@ -84,6 +84,7 @@ def main():
     level = 0
     lives = 5
     main_font = pygame.font.SysFont("comicsans", 50)
+    lost_font = pygame.font.SysFont("comicsans", 60)
 
     # Store all enemies
     enemies = []
@@ -96,6 +97,8 @@ def main():
     player = Player(300, 650)
 
     clock = pygame.time.Clock()
+
+    lost = False
     # Render Game
     def redraw_window():
         # Draws an image or anything to the specific coord (top left)
@@ -114,12 +117,20 @@ def main():
         # Draw Ship to Screen
         player.draw(WIN)
 
+        if lost:
+            lost_label = lost_font.render("Your a Loser !", 1 (255,255,255))
+            # (Math to put message in middle)
+            WIN.blie(lost_label, (WIDTH / 2 - lost_label.get_width() / 2, 350))
+
         # Refreshes Screen so it has updated version
         pygame.display.update()
 
     while run:
         # Tick clock based on FPS Rate (Allows our game to stay consistent on any device)
         clock.tick(FPS)
+        # Check if player lost
+        if lives <= 0 or player.health <= 0:
+            lost = True
         # When all enemy ships die increment level
         if len(enemies) == 0:
             level += 1
