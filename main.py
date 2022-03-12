@@ -99,6 +99,8 @@ def main():
     clock = pygame.time.Clock()
 
     lost = False
+    # Lost message timer
+    lost_timer = 0
     # Render Game
     def redraw_window():
         # Draws an image or anything to the specific coord (top left)
@@ -118,9 +120,9 @@ def main():
         player.draw(WIN)
 
         if lost:
-            lost_label = lost_font.render("Your a Loser !", 1 (255,255,255))
+            lost_label = lost_font.render("Your a Loser !", 1, (255,0,0))
             # (Math to put message in middle)
-            WIN.blie(lost_label, (WIDTH / 2 - lost_label.get_width() / 2, 350))
+            WIN.blit(lost_label, (WIDTH / 2 - lost_label.get_width() / 2, 350))
 
         # Refreshes Screen so it has updated version
         pygame.display.update()
@@ -128,9 +130,19 @@ def main():
     while run:
         # Tick clock based on FPS Rate (Allows our game to stay consistent on any device)
         clock.tick(FPS)
+        
+        redraw_window()
         # Check if player lost
         if lives <= 0 or player.health <= 0:
             lost = True
+            lost_timer += 1
+
+        if lost:
+            # Shows lost message for 3 seconds
+            if lost_timer > FPS * 3:
+                run = False
+            else:
+                continue
         # When all enemy ships die increment level
         if len(enemies) == 0:
             level += 1
@@ -172,5 +184,4 @@ def main():
                 # remove enemy from list
                 enemies.remove(enemy)
 
-        redraw_window()
 main()
