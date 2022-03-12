@@ -26,6 +26,25 @@ YELLOW_LASER = pygame.image.load(os.path.join("assets", "pixel_laser_yellow.png"
 # Load background and scale it to match screen size
 BACKGROUND = pygame.transform.scale(pygame.image.load(os.path.join("assets", "background-black.png")), (WIDTH, HEIGHT))
 
+class Laser:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.img = img
+        self.mask = pygame.mask.from_surface(self.img)
+    
+    def draw(self, window):
+        window.blit(self.img, (self.x, self.y))
+
+    def move(self, vel):
+        self.y += vel
+
+    def off_screen(self, height):
+        return self.y <= height and self.y >= 0
+
+    def collision(self, obj):
+        return collide(obj, self)
+
 # Abstract Class (inherit class for all the ships and manipulate)
 class Ship:
     def __init__(self, x, y, health=100):
@@ -76,6 +95,13 @@ class Enemy(Ship):
         # If we pass a speed ships move diown
         self.y += vel
 
+# Sees if pixels are overlapping
+def collide(obj1, obj2):
+    # distance between obj
+    offset_x = obj2.x - obj1.x
+    offset_y = obj2.y - obj1.y
+    # is obj 1 overlapping obj2 with offset?
+    return obj1.mask.overlap(obj2.mask, (offset_x,offset_y)) != None # returns (x, y)
 
 # Main loop to run game logic
 def main():
@@ -130,7 +156,7 @@ def main():
     while run:
         # Tick clock based on FPS Rate (Allows our game to stay consistent on any device)
         clock.tick(FPS)
-        
+
         redraw_window()
         # Check if player lost
         if lives <= 0 or player.health <= 0:
