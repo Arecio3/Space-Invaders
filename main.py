@@ -47,13 +47,14 @@ class Laser:
 
 # Abstract Class (inherit class for all the ships and manipulate)
 class Ship:
+    COOLDOWN = 30
     def __init__(self, x, y, health=100):
         self.x = x
         self.y = y
         self.health = health
         # We define these in General class
         self.ship_img = None
-        self.lasers_img = None
+        self.laser_img = None
         self.lasers = []
         self.cool_down_counter = 0
    
@@ -65,8 +66,24 @@ class Ship:
     # Gets width and height of the ship so it doesnt go off screen
     def get_width(self):
         return self.ship_img.get_width()
+
     def get_height(self):
         return self.ship_img.get_height()
+
+    def cooldown(self):
+        if self.cool_down_counter >= self.COOLDOWN:
+            self.cool_down_counter = 0
+        elif self.cool_down_counter > 0:
+            self.cool_down_counter += 1
+
+
+    def shoot(self):
+        # If lasers run out
+        if self.cool_down_counter == 0:
+            laser = Laser(x, y, self.laser_img)
+            self.lasers.append(laser)
+            # start cooldown counter
+            self.cool_down_counter = 1
 
 class Player(Ship):
     def __init__(self, x, y, health=100):
