@@ -40,7 +40,7 @@ class Laser:
         self.y += vel
 
     def off_screen(self, height):
-        return self.y <= height and self.y >= 0
+        return not(self.y <= height and self.y >= 0)
 
     def collision(self, obj):
         return collide(obj, self)
@@ -63,6 +63,23 @@ class Ship:
         # pygame.draw.rect(window, (255, 0,0), (self.x, self.y, 50, 50))
         # Draw Ship
         window.blit(self.ship_img, (self.x, self.y))
+        # Draw lasers to screen
+        for laser in self.lasers:
+            laser.draw(window)
+    
+    # checks if lasers hit player
+    def move_lasers(self, vel, obj):
+        # Calls this once a frame so we can check if we can send another laser
+        self.cooldown()
+        for laser in self.lasers:
+            laser.move(vel)
+            # Checks if laser left screen
+            if laser.off_screen(HEIGHT):
+                self.lasers.remove(laser)
+            elif laser.collision(obj):
+                obj.health -= 10
+                self.laser.remove(laser)  
+    
     # Gets width and height of the ship so it doesnt go off screen
     def get_width(self):
         return self.ship_img.get_width()
@@ -80,7 +97,7 @@ class Ship:
     def shoot(self):
         # If lasers run out
         if self.cool_down_counter == 0:
-            laser = Laser(x, y, self.laser_img)
+            laser = Laser(self.x, self.y, self.laser_img)
             self.lasers.append(laser)
             # start cooldown counter
             self.cool_down_counter = 1
@@ -94,6 +111,22 @@ class Player(Ship):
         # Mask (pixel perfect collision) takes ship img and makes mask = tells us where there is and isnt any pixels
         self.mask = pygame.mask.from_surface(self.ship_img)
         self.max_health = health
+
+         # checks if player hit enemy objs becuase multiple enemies
+    def move_lasers(self, vel, objs):
+        # Calls this once a frame so we can check if we can send another laser
+        self.cooldown()
+        # move laser
+        for laser in self.lasers:
+            laser.move(vel)
+            # Checks if laser left screen
+            if laser.off_screen(HEIGHT):
+                self.lasers.remove(laser)
+            else:
+                for obj in objs:
+                    if laser.collision(obj):
+                        objs.remove(obj)
+                        self.laser.remove(laser)
 
 class Enemy(Ship):
     # DICT OF COLORS
@@ -136,6 +169,7 @@ def main():
     # Enemy speed
     enemy_vel = 1
     player_speed = 5
+    laser_vel = 4
     # Instantiate a ship
     player = Player(300, 650)
 
@@ -216,15 +250,21 @@ def main():
         # Checks if your in the screen
         if keys[pygame.K_s] and player.y + player_speed + player.get_height() < HEIGHT: # move down
             player.y += player_speed
+        # Make space bar shoot lasers
+        if keys[pygame.K_SPACE]:
+            player.shoot()
 
         # For each enemy on screen move down by velocity [copy so we dont modify list we're going through]
         for enemy in enemies[:]:
             enemy.move(enemy_vel)
+            enemy.move_lasers(laser_vel, player)
             # Check if enemy went passed Player Ship
             if enemy.y + enemy.get_height() > HEIGHT:
                 # Takes life away
                 lives -= 1
                 # remove enemy from list
                 enemies.remove(enemy)
+
+        player.move_lasers(laser_vel, enemies)
 
 main()
