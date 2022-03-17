@@ -86,7 +86,7 @@ class Ship:
 
     def get_height(self):
         return self.ship_img.get_height()
-
+    # Half a second delay before shoot
     def cooldown(self):
         if self.cool_down_counter >= self.COOLDOWN:
             self.cool_down_counter = 0
@@ -126,7 +126,7 @@ class Player(Ship):
                 for obj in objs:
                     if laser.collision(obj):
                         objs.remove(obj)
-                        self.laser.remove(laser)
+                        self.lasers.remove(laser)
 
 class Enemy(Ship):
     # DICT OF COLORS
@@ -265,6 +265,6 @@ def main():
                 # remove enemy from list
                 enemies.remove(enemy)
 
-        player.move_lasers(laser_vel, enemies)
+        player.move_lasers(-laser_vel, enemies)
 
 main()
